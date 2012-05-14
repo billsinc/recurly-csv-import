@@ -1,9 +1,10 @@
 <?php
 
 //
-//	 Recurly Accounts Setup - v1.0
+//	 Recurly CSV Import - v1.1
 //
-//	 Used for updating billing information for accounts in Recurly
+//	 Used for Recurly account and subscription creation from a CSV file 
+//	 containing the accounts and subscriptions list.
 //
 //   Author: Bill Sinclair <bill@agelio.net>
 //
@@ -35,15 +36,40 @@ require_once('lib/recurly.php');
 // Include parameter file
 require_once('config.php');
 
-
+// Step 1: Creating accounts
 ini_set('auto_detect_line_endings', true);
 $csvfile = fopen($filename,'rb');
 while(!feof($csvfile)) {
 	$csvarray[] = fgetcsv($csvfile);
 }
 
-// Specify CSV row numbers if needed, defaults from 1-99, also change corresponding row numbers to match data in your CSV file
-for ( $row = 1; $row < 100; $row++)
+echo 'Creating accounts...';
+// CHANGE corresponding row numbers to match data in your CSV file
+for ( $row = 1; $row++)
+   		{
+			$account = new Recurly_Account($csvarray[$row][0]);
+			// Assumes username and email are the same field
+			$account->username = $csvarray[$row][1];
+			$account->email = $csvarray[$row][1];
+			$account->first_name = $csvarray[$row][2];
+			$account->last_name = $csvarray[$row][3];
+			$account->company_name = '';
+			$account->create();
+			echo 'New account created for user: ' . $csvarray[$row][1] . '<br /><br />';
+   		}
+		echo 'Done creating accounts!';
+
+
+// Step 2:  Add billing information to previously created accounts
+ini_set('auto_detect_line_endings', true);
+$csvfile = fopen($filename,'rb');
+while(!feof($csvfile)) {
+	$csvarray[] = fgetcsv($csvfile);
+}
+
+echo 'Adding billing information...';
+// CHANGE corresponding row numbers to match data in your CSV file
+for ( $row = 1; $row++)
    		{
 			$billing_info = new Recurly_BillingInfo();
 			$billing_info->account_code = $csvarray[$row][0];
@@ -63,5 +89,34 @@ for ( $row = 1; $row < 100; $row++)
 			$billing_info->update();
 			echo 'Billing information updated for account number: ' . $csvarray[$row][0] . '<br /><br />';
    		}
-		echo 'Done!'
+		echo 'Done adding billing information!';
+
+
+// Step 3: Creating subscriptions
+ini_set('auto_detect_line_endings', true);
+$csvfile = fopen($filename,'rb');
+while(!feof($csvfile)) {
+	$csvarray[] = fgetcsv($csvfile);
+}
+
+echo 'Creating subscriptons...';
+// CHANGE corresponding row numbers to match data in your CSV file
+for ( $row = 1; $row++)
+   		{
+			$subscription = new Recurly_Subscription();
+			$account = new Recurly_Account();
+			$account->account_code = $csvarray[$row][0];
+			$subscription->plan_code = '';
+			$subscription->currency = 'USD';
+			$subscription->add_ons = '';
+			$subscription->trial_ends_at = 'Thursday, March 15, 2012 00:00:00 PM GMT-6';
+			$subscription->start_at = 'Thursday, March 15, 2012 00:00:00 PM GMT-6';
+			$subscription->account = $account;
+			$subscription->create();
+			echo 'Subscription created for account number: ' . $csvarray[$row][0] . '<br /><br />';
+   		}
+		echo 'Done creating subscriptions!';
+
+echo 'All done!';		
+
 ?>

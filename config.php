@@ -31,11 +31,11 @@
 
 // Need Recurly PHP library
 require_once('lib/recurly.php');
-// Enter your API Key
+// ENTER your API Key
 Recurly_Client::$apiKey = 'ENTER_API_KEY';
-// Set timezone
+// SET timezone
 date_default_timezone_set('America/Chicago');
-// Enter the name of your CSV file
+// ENTER the name of your CSV file
 $filename = 'ENTER_CSV_FILE_NAME.csv';
 
 ?>
