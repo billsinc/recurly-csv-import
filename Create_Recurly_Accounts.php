@@ -1,7 +1,7 @@
 <?php
 
 //
-//	 Recurly CSV Import - v1.1
+//	 Recurly CSV Import - v1.2
 //
 //	 Used for Recurly account and subscription creation from a CSV file 
 //	 containing the accounts and subscriptions list.
@@ -30,11 +30,17 @@
 //   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //   THE SOFTWARE.
 
-
 // Need Recurly PHP library
 require_once('lib/recurly.php');
-// Include parameter file
-require_once('config.php');
+
+// Customize Configuration
+// ENTER your API Key
+Recurly_Client::$apiKey = 'ENTER_API_KEY';
+// SET timezone
+date_default_timezone_set('America/Chicago');
+// ENTER the name of your CSV file
+$filename = 'ENTER_CSV_FILE_NAME.csv';
+
 
 // Step 1: Creating accounts
 ini_set('auto_detect_line_endings', true);
@@ -44,7 +50,7 @@ while(!feof($csvfile)) {
 }
 
 echo 'Creating accounts...';
-// CHANGE corresponding row numbers to match data in your CSV file
+// CHANGE corresponding row numbers to match data in your CSV file, defaults to starting with first row
 for ( $row = 1; $row++)
    		{
 			$account = new Recurly_Account($csvarray[$row][0]);
@@ -68,7 +74,7 @@ while(!feof($csvfile)) {
 }
 
 echo 'Adding billing information...';
-// CHANGE corresponding row numbers to match data in your CSV file
+// CHANGE corresponding row numbers to match data in your CSV file, defaults to starting with first row
 for ( $row = 1; $row++)
    		{
 			$billing_info = new Recurly_BillingInfo();
@@ -100,7 +106,7 @@ while(!feof($csvfile)) {
 }
 
 echo 'Creating subscriptons...';
-// CHANGE corresponding row numbers to match data in your CSV file
+// CHANGE corresponding row numbers to match data in your CSV file, defaults to starting with first row
 for ( $row = 1; $row++)
    		{
 			$subscription = new Recurly_Subscription();
